@@ -1,0 +1,222 @@
+package com.monobogdan.miniyt.backend;
+
+import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Log;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import javax.net.ssl.HttpsURLConnection;
+
+public class YTAPI {
+
+    private final String instance = "https://inv.vern.cc/";
+    private final String relay = "http://h168302.srv22.test-hf.su/apirelay.php";
+
+    public static final class Video
+    {
+        public String preview;
+        public String name;
+        public String id;
+        public String url;
+
+        public int views;
+        public String length;
+        public int likes;
+        public String uploadDate;
+    }
+
+    public interface Callback
+    {
+        void success(String obj);
+        void error(String reason);
+    }
+
+    public interface PreviewCallback
+    {
+        void loaded(Bitmap scaledBitmap);
+        void error(String reason);
+    }
+
+    private Activity primary;
+    private ExecutorService imageLoaderThreadPool;
+
+    public YTAPI(Activity primary)
+    {
+        this.primary = primary;
+
+        imageLoaderThreadPool = Executors.newFixedThreadPool(3);
+    }
+
+    public void schedulePreviewDownload(String url, String cacheName, PreviewCallback callback)
+    {
+        imageLoaderThreadPool.execute(new Runnable() {
+            @Override
+            public void run() {
+                try
+                {
+                    File cacheDir = new File(primary.getApplicationContext().getCacheDir().getAbsolutePath() + "/preview/");
+                    cacheDir.mkdir();
+                    File cachedPreview = new File(cacheDir.getAbsolutePath() + cacheName);
+
+                    Bitmap bmp = null;
+
+                    if(cachedPreview.exists())
+                    {
+                        bmp = BitmapFactory.decodeFile(cachedPreview.getAbsolutePath());
+                    }
+                    else {
+                        HttpsURLConnection conn = (HttpsURLConnection) new URL(url).openConnection();
+                        conn.setDoInput(true);
+                        Log.i("TAG", "run: " + conn.getURL().toString());
+                        conn.setRequestMethod("GET");
+                        conn.setInstanceFollowRedirects(true);
+                        conn.connect();
+
+                        InputStream reader = conn.getInputStream();
+                        byte[] buf = new byte[conn.getContentLength()];
+
+                        int ptr = 0;
+                        while (ptr < buf.length) {
+                            ptr += reader.read(buf, ptr, buf.length - ptr);
+                        }
+                        Log.i("", "run: " + url + " " + buf.length);
+                        bmp = BitmapFactory.decodeByteArray(buf, 0, buf.length);
+
+                        FileOutputStream foStream = new FileOutputStream(cachedPreview);
+                        foStream.write(buf);
+                    }
+
+                    if(bmp != null) {
+                        callback.loaded(Bitmap.createScaledBitmap(bmp, 128, 128, true));
+                        bmp.recycle();
+                    }
+                    else
+                    {
+                        //callback.error("Ошибка при загрузке превьюшек");
+                    }
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+
+                    primary.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            callback.error("Generic error: " + e.getLocalizedMessage());
+                        }
+                    });
+                }
+            }
+        });
+    }
+
+    public Video getVideoDescription(JSONObject obj) throws JSONException
+    {
+        Video ret = new Video();
+
+        ret.name = obj.getString("title");
+        ret.id = obj.getString("videoId");
+        ret.likes = obj.getInt("likeCount");
+        ret.views = obj.getInt("viewCount");
+
+        JSONArray adaptiveFormats = obj.getJSONArray("formatStreams");
+
+        for(int i = 0; i < adaptiveFormats.length(); i++)
+        {
+            JSONObject fmt = adaptiveFormats.getJSONObject(i);
+
+            Log.i("", "getVideoDescription: " + fmt.getString("type"));
+
+            if(fmt.getString("type").contains("video/mp4"))
+            {
+                ret.url = fmt.getString("url");
+
+                break;
+            }
+        }
+
+        return ret;
+    }
+
+    public ArrayList<Video> getVideoList(JSONArray obj) throws JSONException
+    {
+        ArrayList<Video> ret = new ArrayList<>();
+
+        for (int i = 0; i < obj.length(); i++) {
+            JSONObject jVideo = obj.getJSONObject(i);
+            Video video = new Video();
+
+                video.id = jVideo.getString("videoId");
+                video.name = jVideo.getString("title");
+                video.uploadDate = jVideo.getString("publishedText");
+                video.views = jVideo.getInt("viewCount");
+                video.preview = jVideo.getJSONArray("videoThumbnails").getJSONObject(0).getString("url");
+
+                int length = jVideo.getInt("lengthSeconds");
+                video.length = (length / 60) + ":" + (length - ((length / 60) * 60));
+
+                ret.add(video);
+        }
+
+        return ret;
+    }
+
+    public void request(String method, Callback runnable)
+    {
+        Executors.newSingleThreadExecutor().execute(new Runnable() {
+            @Override
+            public void run() {
+                try
+                {
+                    HttpsURLConnection conn = (HttpsURLConnection) new URL(instance + "api/v1/" + method).openConnection();
+                    conn.setDoInput(true);
+                    conn.setDoOutput(false);
+                    Log.i("TAG", "run: " + conn.getURL().toString());
+                    conn.setRequestMethod("GET");
+                    conn.connect();
+
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                    String json = "";
+
+                    while(reader.ready())
+                        json += reader.readLine();
+
+                    Log.i("TAG", "run: " + json);
+                    String finalJson = json;
+                    primary.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            runnable.success(finalJson);
+                        }
+                    });
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+
+                    primary.runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            runnable.error("Generic error: " + e.getLocalizedMessage());
+                        }
+                    });
+                }
+            }
+        });
+
+    }
+}

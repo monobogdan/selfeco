@@ -1,0 +1,36 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.monobogdan.minivk'
+    compileSdk 8
+    buildToolsVersion '17.0.0'
+
+    defaultConfig {
+        applicationId "com.monobogdan.minivk"
+        minSdk 3
+        //noinspection ExpiredTargetSdkVersion
+        targetSdk 3
+        versionCode 1
+        versionName "1.0"
+    }
+
+    buildTypes {
+        debug {
+            zipAlignEnabled false
+        }
+        release {
+            minifyEnabled false
+
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+
+}

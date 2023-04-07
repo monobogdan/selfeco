@@ -1,0 +1,22 @@
+<resources>
+    <string name="pAutoUpdate">Auto update</string>
+    <string name="pNot">Show notifications</string>
+    <string name="pLogout">Logout</string>
+    <string name="pCheckUpdates">Check updates</string>
+
+    <string name="update">Update</string>
+    <string name="preferences">Preferences</string>
+
+    <string name="catFeed">Feed</string>
+    <string name="catDialogs">Dialogs</string>
+    <string name="catMusic">Music</string>
+
+    <string name="login">Login:</string>
+    <string name="pass">Password:</string>
+    <string name="auth">Authorize</string>
+
+    <string-array name="audio_options">
+        <item>Добавить</item>
+        <item>Сохранить</item>
+    </string-array>
+</resources>

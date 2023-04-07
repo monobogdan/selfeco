@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <application
+        android:label="MiniVK"
+        tools:targetApi="6"
+        android:theme="@android:style/Theme.Light.NoTitleBar">
+        <activity android:name=".ui.Auth"
+
+            android:exported="true"
+            android:label="MiniVK"
+            >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".ui.DialogsActivity"></activity>
+        <activity android:name=".ui.Chat"></activity>
+        <activity android:name=".ui.MusicActivity"></activity>
+        <service android:name=".service.PollService"></service>
+    </application>
+
+</manifest>
