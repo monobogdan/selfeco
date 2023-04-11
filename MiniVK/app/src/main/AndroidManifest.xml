@@ -10,7 +10,7 @@
         android:label="MiniVK"
         tools:targetApi="6"
         android:theme="@android:style/Theme.Light.NoTitleBar">
-        <activity android:name=".ui.Auth"
+        <activity android:name=".ui.AuthActivity"
 
             android:exported="true"
             android:label="MiniVK"
@@ -22,7 +22,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.DialogsActivity"></activity>
-        <activity android:name=".ui.Chat"></activity>
+        <activity android:name=".ui.ChatActivity"></activity>
         <activity android:name=".ui.MusicActivity"></activity>
         <service android:name=".service.PollService"></service>
     </application>

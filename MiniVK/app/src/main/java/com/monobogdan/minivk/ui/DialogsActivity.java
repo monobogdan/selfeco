@@ -1,13 +1,11 @@
 package com.monobogdan.minivk.ui;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
@@ -19,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.monobogdan.minivk.BitmapCache;
+import com.monobogdan.minivk.PersistStorage;
 import com.monobogdan.minivk.R;
 import com.monobogdan.minivk.api.VK;
 import com.monobogdan.minivk.api.VKDataSet;
@@ -94,7 +93,7 @@ public class DialogsActivity extends VKActivity {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent();
-                    intent.setClass(getApplicationContext(), Chat.class);
+                    intent.setClass(getApplicationContext(), ChatActivity.class);
                     intent.putExtra("uid", dialog.id);
                     intent.putExtra("name", dialog.name);
                     intent.putExtra("avatar", dialog.avatar);
@@ -150,10 +149,17 @@ public class DialogsActivity extends VKActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+
         ViewGroup content = (ViewGroup) findViewById(R.id.content);
         contentPrimary = new ListView(getApplicationContext());
+        contentPrimary.setFocusable(true);
+        contentPrimary.requestFocus();
         content.addView(contentPrimary);
+
         adapter = new DialogAdapter();
+        contentPrimary.setFocusable(true);
+        contentPrimary.requestFocus();
+
         contentPrimary.setDivider(null);
         contentPrimary.setAdapter(adapter);
         contentPrimary.setOnScrollListener(new AbsListView.OnScrollListener() {

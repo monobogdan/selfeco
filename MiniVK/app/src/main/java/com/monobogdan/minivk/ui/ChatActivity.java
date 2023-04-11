@@ -34,7 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class Chat extends Activity {
+public class ChatActivity extends Activity {
 
     private int uid;
     private MediaPlayer voiceMessagePlayer;
@@ -178,7 +178,7 @@ public class Chat extends Activity {
 
                 @Override
                 public void failed(String reason) {
-                    UIUtils.notifyNetworkError(Chat.this, reason);
+                    UIUtils.notifyNetworkError(ChatActivity.this, reason);
                 }
             }, this);
         }
@@ -202,7 +202,7 @@ public class Chat extends Activity {
 
             @Override
             public void failed(String reason) {
-                UIUtils.notifyNetworkError(Chat.this, reason);
+                UIUtils.notifyNetworkError(ChatActivity.this, reason);
             }
         }, this);
     }

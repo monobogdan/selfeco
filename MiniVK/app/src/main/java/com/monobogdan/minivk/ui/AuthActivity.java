@@ -16,10 +16,7 @@ import com.monobogdan.minivk.api.VK;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
-import java.io.PrintWriter;
-
-public class Auth extends Activity {
+public class AuthActivity extends Activity {
     private final String TAG = "Auth";
 
     private VK vk;
@@ -52,7 +49,7 @@ public class Auth extends Activity {
     }
 
     public void onAuthorize(View view) {
-        ProgressDialog dialog = new ProgressDialog(Auth.this);
+        ProgressDialog dialog = new ProgressDialog(AuthActivity.this);
         dialog.setMessage("Загрузка...");
         dialog.setCancelable(false);
         dialog.show();
@@ -82,14 +79,14 @@ public class Auth extends Activity {
 
                     @Override
                     public void failed(String reason) {
-
+                        dialog.cancel();
                     }
-                }, Auth.this);
+                }, AuthActivity.this);
             }
 
             @Override
             public void error(String desc) {
-                Toast.makeText(Auth.this, desc, Toast.LENGTH_LONG).show();
+                Toast.makeText(AuthActivity.this, desc, Toast.LENGTH_LONG).show();
                 dialog.cancel();
             }
         }, this);

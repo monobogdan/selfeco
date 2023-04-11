@@ -29,8 +29,8 @@ import javax.net.ssl.SSLSession;
 
 public class VK {
 
-    private final String apiUrl = "http://h168302.srv22.test-hf.su/apirelay.php";
-    private final String audioUrl = "http://h168302.srv22.test-hf.su/audiorelay.php";
+    private final String apiUrl = "http://90.156.209.92/apirelay.php";
+    private final String audioUrl = "http://90.156.209.92/audiorelay.php";
     private final String version = "5.131";
 
     private final String APP_ID = "2274003";
@@ -140,16 +140,22 @@ public class VK {
                     HttpURLConnection conn = (HttpURLConnection) new URL(apiUrl).openConnection();
                     conn.setDoInput(true);
                     conn.setDoOutput(true);
+                    conn.setRequestMethod("POST");
+                    conn.setRequestProperty("User-Agent", "Mozilla/4.0 (compatible; MSIE 4.01; Windows NT)");
+                    conn.connect();
+
                     OutputStreamWriter writer = new OutputStreamWriter(conn.getOutputStream());
                     writer.write(url);
                     writer.close();
 
                     BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
                     String response = "";
-                    while (reader.ready())
-                        response += reader.readLine();
+                    String line = "";
+                    while ((line = reader.readLine()) != null)
+                        response += line;
 
                     String finalResponse = response;
+                    Log.i("", "run: " + finalResponse);
                     JSONObject obj = new JSONObject(finalResponse);
 
                     if(thiz != null)

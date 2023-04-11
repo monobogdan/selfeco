@@ -185,7 +185,7 @@ public class MusicActivity extends VKActivity {
 
                 try {
                     Log.i("", "success: " + url);
-                    mediaPlayer.setDataSource("http://h168302.srv22.test-hf.su/audiorelay.php?act=stream&url=" + URLEncoder.encode(url));
+                    mediaPlayer.setDataSource("http://90.156.209.92/audiorelay.php?act=stream&url=" + URLEncoder.encode(url));
                     mediaPlayer.prepareAsync();
                     mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                         @Override

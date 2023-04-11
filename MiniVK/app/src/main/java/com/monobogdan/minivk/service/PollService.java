@@ -16,7 +16,7 @@ import android.util.Log;
 import com.monobogdan.minivk.R;
 import com.monobogdan.minivk.api.VK;
 import com.monobogdan.minivk.api.VKDataSet;
-import com.monobogdan.minivk.ui.Chat;
+import com.monobogdan.minivk.ui.ChatActivity;
 
 import org.json.JSONObject;
 
@@ -70,7 +70,7 @@ public class PollService extends Service {
                             VKDataSet.Dialog dlg = dialogs.get(0);
 
                             Intent intent = new Intent();
-                            intent.setClass(getApplicationContext(), Chat.class);
+                            intent.setClass(getApplicationContext(), ChatActivity.class);
                             intent.putExtra("uid", dlg.id);
                             intent.putExtra("name", dlg.name);
                             intent.putExtra("avatar", dlg.avatar);
