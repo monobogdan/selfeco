@@ -78,7 +78,7 @@ public class MainActivity extends Activity {
             vDesc.setText(video.length);
             ImageView vPreview = (ImageView) fragment.findViewById(R.id.video_preview);
 
-            api.schedulePreviewDownload(video.preview, video.id + ".png", new YTAPI.PreviewCallback() {
+            /*api.schedulePreviewDownload(video.preview, video.id + ".png", new YTAPI.PreviewCallback() {
                 @Override
                 public void loaded(Bitmap scaledBitmap) {
                     runOnUiThread(new Runnable() {
@@ -93,7 +93,7 @@ public class MainActivity extends Activity {
                 public void error(String reason) {
 
                 }
-            });
+            });*/
         }
     }
 

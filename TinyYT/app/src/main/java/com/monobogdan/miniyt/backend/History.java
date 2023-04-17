@@ -61,7 +61,9 @@ public class History {
 
                 vid.id = vidObj.getString("id");
                 vid.name = vidObj.getString("name");
-                vid.preview = vidObj.getString("preview");
+
+                if(vidObj.has("preview"))
+                    vid.preview = vidObj.getString("preview");
 
                 videos.add(vid);
             }

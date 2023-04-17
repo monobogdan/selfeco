@@ -54,10 +54,10 @@
 	}
 	
 	$actions = array();
-	$actions["get"] = audioGet;
-	$actions["search"] = audioSearch;
-	$actions["getDetails"] = audioGetDetails;
-	$actions["stream"] = audioStream;
+	$actions["get"] = 'audioGet';
+	$actions["search"] = 'audioSearch';
+	$actions["getDetails"] = 'audioGetDetails';
+	$actions["stream"] = 'audioStream';
 	
 	if(isset($_GET["act"]))
 	{

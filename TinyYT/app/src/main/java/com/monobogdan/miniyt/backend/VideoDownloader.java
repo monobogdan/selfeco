@@ -72,9 +72,6 @@ public class VideoDownloader {
                     Log.i("", "run: 2");
                     conn.connect();
 
-
-                    Log.i("", "run: 1");
-
                     int len = conn.getContentLength();
                     BufferedInputStream reader = new BufferedInputStream(conn.getInputStream(), 4096000);
 

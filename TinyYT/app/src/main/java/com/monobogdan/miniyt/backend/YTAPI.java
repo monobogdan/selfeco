@@ -14,6 +14,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
@@ -23,7 +25,7 @@ import javax.net.ssl.HttpsURLConnection;
 
 public class YTAPI {
 
-    private final String instance = "https://inv.vern.cc/";
+    private final String instance = "https://y.com.sb/api/v1/";
     private final String relay = "http://h168302.srv22.test-hf.su/apirelay.php";
 
     public static final class Video
@@ -79,12 +81,16 @@ public class YTAPI {
                         bmp = BitmapFactory.decodeFile(cachedPreview.getAbsolutePath());
                     }
                     else {
-                        HttpsURLConnection conn = (HttpsURLConnection) new URL(url).openConnection();
+                        HttpURLConnection conn = (HttpURLConnection) new URL("http://90.156.209.92/apirelay.php").openConnection();
                         conn.setDoInput(true);
-                        Log.i("TAG", "run: " + conn.getURL().toString());
-                        conn.setRequestMethod("GET");
-                        conn.setInstanceFollowRedirects(true);
+                        conn.setDoOutput(true);
+                        conn.setRequestMethod("POST");
+                        conn.setRequestProperty("User-Agent", "Mozilla/4.0 (compatible; MSIE 4.01; Windows NT)");
                         conn.connect();
+
+                        OutputStreamWriter writer = new OutputStreamWriter(conn.getOutputStream());
+                        writer.write(url);
+                        writer.close();
 
                         InputStream reader = conn.getInputStream();
                         byte[] buf = new byte[conn.getContentLength()];
@@ -182,25 +188,29 @@ public class YTAPI {
             public void run() {
                 try
                 {
-                    HttpsURLConnection conn = (HttpsURLConnection) new URL(instance + "api/v1/" + method).openConnection();
+                    HttpURLConnection conn = (HttpURLConnection) new URL("http://90.156.209.92/apirelay.php").openConnection();
                     conn.setDoInput(true);
-                    conn.setDoOutput(false);
-                    Log.i("TAG", "run: " + conn.getURL().toString());
-                    conn.setRequestMethod("GET");
+                    conn.setDoOutput(true);
+                    conn.setRequestMethod("POST");
+                    conn.setRequestProperty("User-Agent", "Mozilla/4.0 (compatible; MSIE 4.01; Windows NT)");
                     conn.connect();
 
+                    OutputStreamWriter writer = new OutputStreamWriter(conn.getOutputStream());
+                    writer.write(instance + method);
+                    writer.close();
+
                     BufferedReader reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-                    String json = "";
+                    String response = "";
+                    String line = "";
+                    while ((line = reader.readLine()) != null)
+                        response += line;
 
-                    while(reader.ready())
-                        json += reader.readLine();
-
-                    Log.i("TAG", "run: " + json);
-                    String finalJson = json;
+                    String finalResponse = response;
+                    Log.i("TAG", "run: " + instance + method);
                     primary.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            runnable.success(finalJson);
+                            runnable.success(finalResponse);
                         }
                     });
                 }

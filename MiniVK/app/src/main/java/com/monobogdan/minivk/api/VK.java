@@ -78,7 +78,7 @@ public class VK {
     public void beginDirectAuthFlow(String login, String password, AuthResult auth, Activity thiz)
     {
         String fmt = String.format("https://oauth.vk.com/token?grant_type=password&validate_token=true&client_id=%s&client_secret=%s&username=%s&password=%s",
-                APP_ID, APP_SECRET, login, password);
+                APP_ID, APP_SECRET, URLEncoder.encode(login), URLEncoder.encode(password));
 
         directRequest(fmt, new VKResult() {
             @Override
