@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.util.Log;
+import android.view.inputmethod.InputMethodManager;
 
 import com.monobogdan.minivk.PersistStorage;
 

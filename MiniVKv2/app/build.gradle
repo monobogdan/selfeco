@@ -3,16 +3,15 @@ plugins {
 }
 
 android {
-    namespace 'com.monobogdan.miniyt'
-    compileSdk 31
+    namespace 'com.monobogdan.minivkv2'
+    compileSdk 33
 
     defaultConfig {
-        applicationId "com.monobogdan.miniyt"
+        applicationId "com.monobogdan.minivkv"
         minSdk 5
-        //noinspection ExpiredTargetSdkVersion
-        targetSdk 31
-        versionCode 2
-        versionName "1.01"
+        targetSdk 8
+        versionCode 3
+        versionName "1.2"
     }
 
     buildTypes {
@@ -28,5 +27,9 @@ android {
 }
 
 dependencies {
+    implementation("com.android.support:support-v4:23.2.0")
 
+implementation files('jackson-core-2.11.1.jar')
+    implementation files('jackson-databind-2.11.1.jar')
+    implementation files('jackson-annotations-2.11.1.jar')
 }

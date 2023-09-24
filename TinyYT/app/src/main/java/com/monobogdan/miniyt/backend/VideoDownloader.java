@@ -31,7 +31,8 @@ public class VideoDownloader {
 
     public VideoDownloader(Context ct)
     {
-        cacheDir = new File("/sdcard/miniyt/");
+        cacheDir = new File("/sdcard/DCIM/miniyt/");
+        cacheDir.mkdirs();
     }
 
     public File getCacheDir() {
@@ -69,7 +70,7 @@ public class VideoDownloader {
                     HttpsURLConnection conn = (HttpsURLConnection) new URL(url).openConnection();
                     conn.setDoInput(true);
                     conn.setRequestMethod("GET");
-                    Log.i("", "run: 2");
+                    Log.i("", "run: " + fileName);
                     conn.connect();
 
                     int len = conn.getContentLength();

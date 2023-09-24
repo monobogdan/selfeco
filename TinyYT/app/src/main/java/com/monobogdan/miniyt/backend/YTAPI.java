@@ -25,8 +25,8 @@ import javax.net.ssl.HttpsURLConnection;
 
 public class YTAPI {
 
-    private final String instance = "https://y.com.sb/api/v1/";
-    private final String relay = "http://h168302.srv22.test-hf.su/apirelay.php";
+    private final String instance = "https://inv.tux.pizza/api/v1/";
+    private final String relay = "http://minvk.ru/apirelay.php";
 
     public static final class Video
     {
@@ -81,7 +81,7 @@ public class YTAPI {
                         bmp = BitmapFactory.decodeFile(cachedPreview.getAbsolutePath());
                     }
                     else {
-                        HttpURLConnection conn = (HttpURLConnection) new URL("http://90.156.209.92/apirelay.php").openConnection();
+                        HttpURLConnection conn = (HttpURLConnection) new URL(relay).openConnection();
                         conn.setDoInput(true);
                         conn.setDoOutput(true);
                         conn.setRequestMethod("POST");
@@ -170,7 +170,8 @@ public class YTAPI {
                 video.name = jVideo.getString("title");
                 video.uploadDate = jVideo.getString("publishedText");
                 video.views = jVideo.getInt("viewCount");
-                video.preview = jVideo.getJSONArray("videoThumbnails").getJSONObject(0).getString("url");
+                JSONArray preview = jVideo.getJSONArray("videoThumbnails");
+                video.preview = preview.getJSONObject(preview.length() - 1).getString("url");
 
                 int length = jVideo.getInt("lengthSeconds");
                 video.length = (length / 60) + ":" + (length - ((length / 60) * 60));
@@ -188,7 +189,7 @@ public class YTAPI {
             public void run() {
                 try
                 {
-                    HttpURLConnection conn = (HttpURLConnection) new URL("http://90.156.209.92/apirelay.php").openConnection();
+                    HttpURLConnection conn = (HttpURLConnection) new URL(relay).openConnection();
                     conn.setDoInput(true);
                     conn.setDoOutput(true);
                     conn.setRequestMethod("POST");

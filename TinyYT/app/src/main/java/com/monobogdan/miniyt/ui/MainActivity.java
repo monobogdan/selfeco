@@ -9,6 +9,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
@@ -78,7 +79,7 @@ public class MainActivity extends Activity {
             vDesc.setText(video.length);
             ImageView vPreview = (ImageView) fragment.findViewById(R.id.video_preview);
 
-            /*api.schedulePreviewDownload(video.preview, video.id + ".png", new YTAPI.PreviewCallback() {
+            api.schedulePreviewDownload(video.preview, video.id + ".png", new YTAPI.PreviewCallback() {
                 @Override
                 public void loaded(Bitmap scaledBitmap) {
                     runOnUiThread(new Runnable() {
@@ -93,18 +94,33 @@ public class MainActivity extends Activity {
                 public void error(String reason) {
 
                 }
-            });*/
+            });
         }
+    }
+
+    private void playVideo(String url) {
+        Intent intent = new Intent();
+        intent.setAction(Intent.ACTION_VIEW);
+        intent.setDataAndType(Uri.parse(url), "video/mp4");
+
+        startActivity(intent);
     }
 
     private void onPlayVideo(YTAPI.Video video) {
         Log.i("TAG", "onPlayVideo: Fetching video...");
+
+        final ProgressDialog preDialog = new ProgressDialog(MainActivity.this);
+        preDialog.setMessage("Получение информации о видео...");
+        preDialog.setCancelable(false);
+        preDialog.show();
 
         api.request("videos/" + video.id, new YTAPI.Callback() {
             @Override
             public void success(String obj) {
                 try {
                     YTAPI.Video video = api.getVideoDescription(new JSONObject(obj));
+
+                    preDialog.cancel();
 
                     ProgressDialog dlg = new ProgressDialog(MainActivity.this);
                     dlg.setMessage("Загрузка...");
@@ -114,49 +130,52 @@ public class MainActivity extends Activity {
                     history.put(video);
                     updateHistory();
 
-                    downloader.beginDownloading(video.url, video.id, new VideoDownloader.Callback() {
-                        @Override
-                        public void success(String fileName) {
-                            dlg.cancel();
+                    if(Build.VERSION.SDK_INT > 999) {
+                        playVideo(video.url);
+                    }
+                    else
+                    {
+                        downloader.beginDownloading(video.url, video.id, new VideoDownloader.Callback() {
+                            @Override
+                            public void success(String fileName) {
+                                dlg.cancel();
 
-                            Intent intent = new Intent();
-                            intent.setAction(Intent.ACTION_VIEW);
-                            intent.setDataAndType(Uri.parse("file://" + fileName), "video/*");
+                                playVideo("file://" + fileName);
+                            }
 
-                            startActivity(intent);
-                        }
-
-                        @Override
-                        public void reportProgress(int progress, int total) {
+                            @Override
+                            public void reportProgress(int progress, int total) {
 
 
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    int percent = (int) (((float) progress / total) * 100);
-                                    dlg.setMessage("Загрузка (" + percent + "/" + 100 + "%)");
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        int percent = (int) (((float) progress / total) * 100);
+                                        dlg.setMessage("Загрузка (" + percent + "/" + 100 + "%)");
 
-                                }
-                            });
-                        }
+                                    }
+                                });
+                            }
 
-                        @Override
-                        public void failed(String reason) {
-                            runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    dlg.cancel();
+                            @Override
+                            public void failed(String reason) {
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        dlg.cancel();
 
-                                    AlertDialog msg = new AlertDialog.Builder(MainActivity.this)
-                                            .setTitle("Ошибочка вышла :(")
-                                            .setMessage("Перезапустите загрузку. Ошибка: " + reason)
-                                            .show();
-                                }
-                            });
+                                        AlertDialog msg = new AlertDialog.Builder(MainActivity.this)
+                                                .setTitle("Ошибочка вышла :(")
+                                                .setMessage("Перезапустите загрузку. Ошибка: " + reason)
+                                                .show();
+                                    }
+                                });
 
-                        }
-                    });
+                            }
+                        });
+                    }
                 } catch (JSONException e) {
+                    preDialog.cancel();
                     buildGenericError(MainActivity.this, e.getLocalizedMessage()).show();
                 }
             }
